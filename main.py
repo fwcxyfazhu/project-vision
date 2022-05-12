@@ -1,5 +1,5 @@
 import os, tkinter, cv2
-from turtle import width
+from turtle import color, width
 import numpy as np 
 from PIL import Image,ImageTk
 from tkinter import filedialog, Frame
@@ -7,6 +7,7 @@ from tkinter import filedialog, Frame
 from carID import *
 from pandas import wide_to_long
 
+背景 = '#a0ffa0'
 class Application(Frame):
     def __init__(self,master = None):
         self.carmela_hight = 600
@@ -14,7 +15,7 @@ class Application(Frame):
         self.Source_Img_Label = None
         self.Source_Img = None
         self.py_path = os.path.abspath(os.path.dirname(__file__))
-        Frame.__init__(self,master,bg = "#a0ffa0")
+        Frame.__init__(self,master,bg = 背景)
         self.pack(expand= tkinter.YES, fill=tkinter.BOTH)
         self.window_init()
         self.String_var = tkinter.StringVar() 
@@ -26,7 +27,7 @@ class Application(Frame):
         self.master.geometry(f"{width}x{height}")
 
     def createWidgets(self):
-        self.fml = Frame(self,bg = "#a0ffa0")
+        self.fml = Frame(self,bg = 背景)
         self.fml_top = Frame(self.fml)
         self.fml_bottom = Frame(self.fml)
         Img_Path_Text = tkinter.Entry(self.fml_top,textvariable=self.String_var,borderwidth=1,state=tkinter.DISABLED)
@@ -52,7 +53,7 @@ class Application(Frame):
         self.fml.pack(side=tkinter.LEFT)
 
         self.fm2 = Frame(self)
-        self.Source_Img_Label = tkinter.Label(self.fm2, bg='#a0ffa0', image=None, width=200, height=200)
+        self.Source_Img_Label = tkinter.Label(self.fm2, bg= 背景 , image=None, width=200, height=200)
         self.Source_Img_Label.image=None
         self.Source_Img_Label.pack(side='right')
         self.fm2.pack(side=tkinter.LEFT)
