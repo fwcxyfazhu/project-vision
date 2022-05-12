@@ -1,75 +1,116 @@
-import tkinter as tk
-import cv2 as cv
+import os, tkinter, cv2
+from turtle import width
+import numpy as np 
 from PIL import Image,ImageTk
-from carID import *
-from tkinter import Frame,filedialog
-import os
+from tkinter import filedialog, Frame
 
-class Application(tk.Frame):
-    def __init__(self, master=None):
-        self.carmela_hight = 300
-        self.carmela_width = 500
+from carID import *
+from pandas import wide_to_long
+
+class Application(Frame):
+    def __init__(self,master = None):
+        self.carmela_hight = 600
+        self.carmela_width = 600
         self.Source_Img_Label = None
         self.Source_Img = None
         self.py_path = os.path.abspath(os.path.dirname(__file__))
-        #初始化窗口
-        Frame.__init__(self,master=master,bg="white")
-        self.pack(expand=tk.YES, fill=tk.BOTH)
+        Frame.__init__(self,master,bg = "#a0ffa0")
+        self.pack(expand= tkinter.YES, fill=tkinter.BOTH)
         self.window_init()
-        #
-        self.String_var = tk.StringVar()
-        #
+        self.String_var = tkinter.StringVar() 
         self.createWidgets()
-
     def window_init(self):
-        self.master.title('车牌识别综合实训')
-        self.master.bg = 'white'
-        width,height = (self.carmela_width,self.carmela_hight)
-        self.master.geometry(f'{width}x{height}')
+        self.master.title('滤镜')
+        self.master.bg = '#a0ffa0'
+        width, height = (self.carmela_width,self.carmela_hight)
+        self.master.geometry(f"{width}x{height}")
 
     def createWidgets(self):
-        self.fm1 = Frame(self,bg='white')
-        self.fm1_top = Frame(self.fm1)
-        self.fm1_bottom = Frame(self.fm1)
-
-        Img_Path_Text = tk.Entry(
-            self.fm1_top,
-            textvariable=self.String_var, 
-            borderwidth=1, 
-            state=tk.DISABLED)
+        self.fml = Frame(self,bg = "#a0ffa0")
+        self.fml_top = Frame(self.fml)
+        self.fml_bottom = Frame(self.fml)
+        Img_Path_Text = tkinter.Entry(self.fml_top,textvariable=self.String_var,borderwidth=1,state=tkinter.DISABLED)
         Img_Path_Text.pack(side='left')
+        Img_Path_Button = tkinter.Button(self.fml_top,text='选择',command=self.AskPicture)
+        Img_Path_Button.pack(side='right')
+        # Outline_Button = tkinter.Button(self.fml_bottom,text='轮廓',command=self.OutlinePicture)
+        # Outline_Button.pack(side='left')
+        # Sharpen_Button = tkinter.Button(self.fml_bottom,text='锐化',command=self.SharpenPicture)
+        # Sharpen_Button.pack(side='left')
+        # Emboss_Button = tkinter.Button(self.fml_bottom,text='浮雕',command=self.EmbossPicture)
+        # Emboss_Button.pack(side='left')
 
-        Img_Path_Button = tk.Button(
-            self.fm1_top,
-            text='选择',
-            command=self.askPic())
-    
-        self.fm2 = Frame(self)
-        self.Source_Img_Label = tk.Label(
-            self.fm2,
-            bg='white',
-            image=None,
-            width=200,
-            height=200
+        pickOut_Buttom = tkinter.Button(
+            self.fml_bottom,
+            text='识别',
+            command=self.pickOut
         )
-        self.Source_Img_Label.image = None
+        pickOut_Buttom.pack(side='left')
+
+        self.fml_top.pack(side=tkinter.TOP)
+        self.fml_bottom.pack(side=tkinter.BOTTOM)
+        self.fml.pack(side=tkinter.LEFT)
+
+        self.fm2 = Frame(self)
+        self.Source_Img_Label = tkinter.Label(self.fm2, bg='#a0ffa0', image=None, width=200, height=200)
+        self.Source_Img_Label.image=None
         self.Source_Img_Label.pack(side='right')
-        self.fm2.pack(side=tk.LEFT)
-    def CvtPIL(self,imgsrc):
-        rgb_img = cv.cvtColor(imgsrc, cv.COLOR_BGR2RGB)
-        rgb_img = Image.fromarray(rgb_img)
-        rgb_img = ImageTk.PhotoImage(rgb_img)
-        self.Source_Img_Label.configure(image=rgb_img)
-        self.Source_Img_Label.image = rgb_img
-    def askPic(self):
+        self.fm2.pack(side=tkinter.LEFT)
+        
+    def CvtPIL(self,srcImg):
+        Rgb_Img = cv2.cvtColor(srcImg, cv2.COLOR_BGR2RGB)
+        # Rgb_Img = cv2.resize(Rgb_Img,(100,100))
+        Rgb_Img = Image.fromarray(Rgb_Img)
+        Rgb_Img = ImageTk.PhotoImage(Rgb_Img)
+        
+        self.Source_Img_Label.configure(image=Rgb_Img)
+        self.Source_Img_Label.image = Rgb_Img
+
+    def AskPicture(self):
         Picture_Path = filedialog.askopenfilename()
         self.String_var.set(Picture_Path)
-        self.Source_Img = cv.imread(Picture_Path)
+        self.Source_Img = cv2.imread(Picture_Path)
         if (self.Source_Img is None):
             self.String_var.set('文件选择错误')
             return
-        rgb_img = self.CvtPIL(self.Source_Img)
+        self.CvtPIL(self.Source_Img)
+    
+    def pickOut(self):
+        if (self.Source_Img is None):
+            self.String_var.set('文件选择错误')
+            return     
+        self.String_var.set(carID(self.Source_Img,'./src'))
+    # def OutlinePicture(self):
+    #     if (self.Source_Img is None):
+    #         self.String_var.set('文件选择错误')
+    #         return
+    #     kernel = np.array((
+    #         [-1,-1,-1],
+    #         [-1,8,-1],
+    #         [-1,-1,-1]),dtype = 'float32')
+    #     dstimg = cv2.filter2D(self.Source_Img, -1, kernel=kernel)
+    #     self.CvtPIL(dstimg)
+    # def SharpenPicture(self):
+    #     if (self.Source_Img is None):
+    #         self.String_var.set('文件选择错误')
+    #         return
+    #     kernel = np.array((
+    #         [-2,-1,0],
+    #         [-1,1,1],
+    #         [0,1,2]),dtype = 'float32')
+    #     dstimg = cv2.filter2D(self.Source_Img, -1, kernel=kernel)
+    #     self.CvtPIL(dstimg)
+    # def EmbossPicture(self):
+    #     if (self.Source_Img is None):
+    #         self.String_var.set('文件选择错误')
+    #         return
+    #     kernel = np.array((
+    #         [-1,-1,-1],
+    #         [-1,9,-1],
+    #         [-1,-1,-1]),dtype = 'float32')
+    #     dstimg = cv2.filter2D(self.Source_Img, -1, kernel=kernel)
+    #     self.CvtPIL(dstimg)
 
-if __name__ == "__main__":
-    win = Application()
-    win.mainloop()
+if __name__ == '__main__':
+    app = Application()
+    app.mainloop()

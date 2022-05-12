@@ -89,7 +89,7 @@ def findCarLoc(src):
     lower_blue = np.array([100, 43, 46])  # 能识别的最小的蓝色
     upper_blue = np.array([120, 255, 255])  # 能识别的最大蓝色
     mask = cv2.inRange(hsv, lower_blue, upper_blue)  # 设置hsv的颜色范围
-    cv2.imshow("mask", mask)
+    # cv2.imshow("mask", mask)
     # 形态学去除周围的噪声
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
     opened = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=3)
@@ -120,7 +120,7 @@ def cutCharImage(src):
     dis = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
     # 阈值分割
     t, rst = cv2.threshold(dis, 127, 255, cv2.THRESH_BINARY)
-    cv2.imshow("binary", rst)
+    # cv2.imshow("binary", rst)
     # 字符切割
     im0 = rst[10:50, 6:30]
     im1 = rst[10:50, 30:54]
@@ -143,29 +143,30 @@ def cutCharImage(src):
 # 车牌识别车牌识别任务的实现过程有输入图像、预处理、车牌定位、字符分割、字符识别、输出结果等环节。重点关注：
 # 1 车牌字符模板图像已经保存在dataset文件夹中，该方法对末班图像的要求比较高
 # 2 本方法适用的车牌图像要求没有过多蓝色系的杂色，否则会影响识别效果
-def carID(imgsrc):
-    src = cv2.imread(imgsrc)
-    cv2.imshow("input", src)
+def carID(imgsrc,datasetSrc):
+    src = imgsrc
+    # cv2.imshow("input", src)
     # 车牌定位
     opened = findCarLoc(src)
-    cv2.imshow("opened", opened)
+    # cv2.imshow("opened", opened)
     # 车牌剪切
     dstim = cutCarImge(src, opened)
-    cv2.imshow("cut", dstim)
+    # cv2.imshow("cut", dstim)
     # 字符剪切
     im0, im1, im2, im3, im4, im5, im6 = cutCharImage(dstim)
-    cv2.imshow("0", im0)
-    cv2.imshow("1", im1)
-    cv2.imshow("2", im2)
-    cv2.imshow("3", im3)
-    cv2.imshow("4", im4)
-    cv2.imshow("5", im5)
-    cv2.imshow("6", im6)
+    # cv2.imshow("0", im0)
+    # cv2.imshow("1", im1)
+    # cv2.imshow("2", im2)
+    # cv2.imshow("3", im3)
+    # cv2.imshow("4", im4)
+    # cv2.imshow("5", im5)
+    # cv2.imshow("6", im6)
     # 字符识别：模板匹配,所有模板都存放于dataset文件夹中
     carNumber = ''
     for im in [im0, im1, im2, im3, im4, im5, im6]:
-        rs = compare_image(im, "dataset")
+        rs = compare_image(im, datasetSrc)
         carNumber += rs
-    print(carNumber)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    # print(carNumber)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+    return carNumber
