@@ -1,10 +1,13 @@
 import tkinter as tk
 import cv2 as cv
 from PIL import Image
+from tk import *
 def changeLabelImage(labelSrc,imageSrc):
     img = cv.cvtColor(imageSrc, cv.COLOR_BGR2RGB)
     rgbImage = Image.fromarray(img)
-    resizeImg = 
+    resizeImg = rgbImage.resize((300,240))
+    global img_file
+    img_file = ImageTk.
 
 def createWindow():
     bg = '#0fee0f'
