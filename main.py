@@ -44,6 +44,17 @@ class Application(tk.Frame):
             text='选择',
             command=self.askPic())
     
+        self.fm2 = Frame(self)
+        self.Source_Img_Label = tk.Label(
+            self.fm2,
+            bg='white',
+            image=None,
+            width=200,
+            height=200
+        )
+        self.Source_Img_Label.image = None
+        self.Source_Img_Label.pack(side='right')
+        self.fm2.pack(side=tk.LEFT)
     def CvtPIL(self,imgsrc):
         rgb_img = cv.cvtColor(imgsrc, cv.COLOR_BGR2RGB)
         rgb_img = Image.fromarray(rgb_img)
